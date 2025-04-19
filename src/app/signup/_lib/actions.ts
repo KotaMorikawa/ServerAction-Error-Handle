@@ -1,7 +1,7 @@
 "use server";
 
-import { createSessionToken, hashPassword } from "@/lib/auth";
-import { setSessionCookie } from "@/lib/auth-actions";
+import { createSessionToken, hashPassword } from "@/lib/auth/utils";
+import { setSessionCookie } from "@/lib/auth/actions/session";
 import { createUser, findUserByEmail } from "@/lib/db";
 import { ActionState, signupSchema } from "@/lib/schema";
 import { redirect } from "next/navigation";

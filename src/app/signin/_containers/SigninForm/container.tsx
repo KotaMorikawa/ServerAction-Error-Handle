@@ -1,36 +1,29 @@
 "use client";
 
-import { useActionState } from "react";
-import { useEffect } from "react";
+import { useStateAction } from "next-safe-action/stateful-hooks";
 import { signinAction } from "../../_lib/actions";
-import { ActionState } from "@/lib/schema";
 import SigninFormPresentational from "./presentational";
 
-// 初期状態の定義
-const initialState: ActionState = {
-  success: false,
-};
-
 export default function SigninFormContainer() {
-  // useActionStateを使用して状態管理とディスパッチ関数を取得
-  const [state, formAction, pending] = useActionState(
-    signinAction,
-    initialState
-  );
+  // next-safe-actionのuseStateActionフックを使用して状態管理
+  // 具体的な型を指定して型エラーを解決
+  const { execute, result, status } = useStateAction(signinAction, {
+    initResult: {},
+  });
 
-  // エラーメッセージが表示されたときに自動的にフォーカスする
-  useEffect(() => {
-    if (state.errors?.email) {
-      document.getElementById("email")?.focus();
-    } else if (state.errors?.password) {
-      document.getElementById("password")?.focus();
-    }
-  }, [state.errors]);
+  // ステータスからペンディング状態を取得
+  const pending = status === "executing";
+
+  // Transform result data to match the expected state structure
+  const transformedState = {
+    errors: result?.data?.errors,
+    message: result?.data?.message,
+  };
 
   return (
     <SigninFormPresentational
-      state={state}
-      formAction={formAction}
+      state={transformedState}
+      action={execute}
       pending={pending}
     />
   );

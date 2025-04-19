@@ -1,19 +1,37 @@
 "use client";
 
 import Link from "next/link";
-import { ActionState } from "@/lib/schema";
 
 interface Props {
-  state: ActionState;
-  formAction: (formData: FormData) => void;
+  state: {
+    errors?: {
+      email?: string[];
+      password?: string[];
+      general?: string[];
+    };
+    message?: string;
+  };
+  // execute関数の型を修正 - useStateActionの戻り値の型に合わせる
+  action: (input: { email: string; password: string }) => void;
   pending: boolean;
 }
 
 export default function SigninFormPresentational({
   state,
-  formAction,
+  action,
   pending,
 }: Props) {
+  // フォームの送信処理
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const formData = new FormData(event.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+
+    // action関数を呼び出す
+    action({ email, password });
+  };
   return (
     <div className="relative w-full max-w-md mx-auto">
       <div className="absolute -inset-1 bg-gradient-to-r from-indigo-600/20 via-sky-500/20 to-indigo-700/20 rounded-2xl blur-xl opacity-70"></div>
@@ -28,7 +46,7 @@ export default function SigninFormPresentational({
           </p>
         </div>
 
-        <form action={formAction} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-5">
             <div className="group relative">
               <input
