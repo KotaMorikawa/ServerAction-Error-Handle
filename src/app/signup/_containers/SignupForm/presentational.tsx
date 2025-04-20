@@ -1,19 +1,24 @@
 "use client";
 
 import Link from "next/link";
-import { ActionState } from "@/lib/schema";
-
-interface Props {
-  state: ActionState;
-  formAction: (formData: FormData) => void;
-  pending: boolean;
-}
+import { AuthFormProps } from "@/lib/auth/types";
 
 export default function SignupFormPresentational({
   state,
-  formAction,
+  action,
   pending,
-}: Props) {
+}: AuthFormProps) {
+  // フォームの送信処理
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+
+    // action関数を呼び出す
+    action({ email, password });
+  };
+
   return (
     <div className="relative w-full max-w-md mx-auto">
       <div className="absolute -inset-1 bg-gradient-to-r from-sky-600/20 via-indigo-500/20 to-sky-700/20 rounded-2xl blur-xl opacity-70"></div>
@@ -26,7 +31,7 @@ export default function SignupFormPresentational({
           <p className="text-indigo-100/80">新しいアカウントを作成しましょう</p>
         </div>
 
-        <form action={formAction} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-5">
             <div className="group relative">
               <input

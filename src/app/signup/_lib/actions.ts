@@ -3,79 +3,58 @@
 import { createSessionToken, hashPassword } from "@/lib/auth/auth-utils";
 import { setSessionCookie } from "@/lib/auth/actions/session-actions";
 import { createUser, findUserByEmail } from "@/lib/db";
-import { ActionState, signupSchema } from "@/lib/schema";
+import { signupSchema } from "@/lib/schema";
 import { redirect } from "next/navigation";
+import { publicActionClient } from "@/lib/auth/safe-action-client";
 
-export async function signupAction(
-  state: ActionState,
-  formData?: FormData
-): Promise<ActionState> {
-  // formDataがない場合は現在の状態を返す
-  if (!formData) {
-    return state;
-  }
+// サインアップアクションの定義
+export const signupAction = publicActionClient
+  .metadata({
+    actionName: "signup",
+  })
+  .schema(signupSchema)
+  .stateAction(async ({ parsedInput }) => {
+    try {
+      const { email, password } = parsedInput;
 
-  // フォームデータの取得
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
+      // ユーザーの存在確認
+      const existingUser = await findUserByEmail(email);
 
-  // バリデーション
-  const result = signupSchema.safeParse({ email, password });
+      if (existingUser) {
+        return {
+          success: false,
+          message: "このメールアドレスは既に登録されています",
+          errors: {
+            email: ["このメールアドレスは既に登録されています"],
+          },
+        };
+      }
 
-  if (!result.success) {
-    // バリデーションエラーがある場合
-    const fieldErrors = result.error.flatten().fieldErrors;
+      // パスワードのハッシュ化
+      const hashedPassword = await hashPassword(password);
 
-    return {
-      success: false,
-      message: "フォームの入力内容を確認してください",
-      errors: {
-        email: fieldErrors.email,
-        password: fieldErrors.password,
-      },
-    };
-  }
+      // ユーザーの作成
+      const newUser = await createUser(email, hashedPassword);
 
-  try {
-    // ユーザーの存在確認
-    const existingUser = await findUserByEmail(email);
+      // セッショントークンの作成と設定
+      const token = createSessionToken({
+        userId: newUser.id,
+        email: newUser.email,
+      });
 
-    if (existingUser) {
+      // セッションクッキーの設定
+      await setSessionCookie(token);
+    } catch (error) {
+      console.error("Signup error:", error);
+
       return {
         success: false,
-        message: "このメールアドレスは既に登録されています",
+        message:
+          "サーバーエラーが発生しました。しばらくしてからお試しください。",
         errors: {
-          email: ["このメールアドレスは既に登録されています"],
+          general: ["サーバーエラーが発生しました"],
         },
       };
     }
-
-    // パスワードのハッシュ化
-    const hashedPassword = await hashPassword(password);
-
-    // ユーザーの作成
-    const newUser = await createUser(email, hashedPassword);
-
-    // セッショントークンの作成と設定
-    const token = createSessionToken({
-      userId: newUser.id,
-      email: newUser.email,
-    });
-
-    // 非同期関数になったので await が必要
-    await setSessionCookie(token);
-  } catch (error) {
-    console.error("Signup error:", error);
-
-    return {
-      success: false,
-      message: "サーバーエラーが発生しました。しばらくしてからお試しください。",
-      errors: {
-        general: ["サーバーエラーが発生しました"],
-      },
-    };
-  }
-
-  // ユーザー作成成功時のリダイレクト
-  redirect("/dashboard");
-}
+    redirect("/dashboard");
+  });

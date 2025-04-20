@@ -1,34 +1,28 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
 import { signupAction } from "../../_lib/actions";
-import { ActionState } from "@/lib/schema";
 import SignupFormPresentational from "./presentational";
-
-// 初期状態をコンポーネント内で定義
-const initialState: ActionState = {
-  success: false,
-};
+import { useStateAction } from "next-safe-action/stateful-hooks";
 
 export default function SignupFormContainer() {
-  const [state, formAction, pending] = useActionState(
-    signupAction,
-    initialState
-  );
+  // next-safe-actionのuseStateActionフックを使用して状態管理
+  const { execute, result, status } = useStateAction(signupAction, {
+    initResult: {},
+  });
 
-  // エラーメッセージが表示されたときに自動的にフォーカスする
-  useEffect(() => {
-    if (state.errors?.email) {
-      document.getElementById("email")?.focus();
-    } else if (state.errors?.password) {
-      document.getElementById("password")?.focus();
-    }
-  }, [state.errors]);
+  // ステータスからペンディング状態を取得
+  const pending = status === "executing";
+
+  // Transform result data to match the expected state structure
+  const transformedState = {
+    errors: result?.data?.errors,
+    message: result?.data?.message,
+  };
 
   return (
     <SignupFormPresentational
-      state={state}
-      formAction={formAction}
+      state={transformedState}
+      action={execute}
       pending={pending}
     />
   );

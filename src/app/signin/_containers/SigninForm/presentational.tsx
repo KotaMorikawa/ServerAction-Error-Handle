@@ -1,26 +1,13 @@
 "use client";
 
 import Link from "next/link";
-
-interface Props {
-  state: {
-    errors?: {
-      email?: string[];
-      password?: string[];
-      general?: string[];
-    };
-    message?: string;
-  };
-  // execute関数の型を修正 - useStateActionの戻り値の型に合わせる
-  action: (input: { email: string; password: string }) => void;
-  pending: boolean;
-}
+import { AuthFormProps } from "@/lib/auth/types";
 
 export default function SigninFormPresentational({
   state,
   action,
   pending,
-}: Props) {
+}: AuthFormProps) {
   // フォームの送信処理
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -32,6 +19,7 @@ export default function SigninFormPresentational({
     // action関数を呼び出す
     action({ email, password });
   };
+
   return (
     <div className="relative w-full max-w-md mx-auto">
       <div className="absolute -inset-1 bg-gradient-to-r from-indigo-600/20 via-sky-500/20 to-indigo-700/20 rounded-2xl blur-xl opacity-70"></div>

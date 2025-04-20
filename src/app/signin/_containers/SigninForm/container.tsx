@@ -6,7 +6,6 @@ import SigninFormPresentational from "./presentational";
 
 export default function SigninFormContainer() {
   // next-safe-actionのuseStateActionフックを使用して状態管理
-  // 具体的な型を指定して型エラーを解決
   const { execute, result, status } = useStateAction(signinAction, {
     initResult: {},
   });
