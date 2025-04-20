@@ -12,6 +12,7 @@ export default defineConfig({
     baseURL: "http://localhost:3000",
     trace: "on-first-retry",
     screenshot: "only-on-failure",
+    headless: false, // ヘッドモードを有効に設定
   },
   projects: [
     {
