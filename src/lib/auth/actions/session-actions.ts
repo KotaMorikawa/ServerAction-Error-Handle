@@ -2,7 +2,7 @@
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { SESSION_TOKEN_NAME, verifySessionToken } from "@/lib/auth/utils";
+import { SESSION_TOKEN_NAME, verifySessionToken } from "@/lib/auth/auth-utils";
 
 // セッションCookieの設定
 export const setSessionCookie = async (token: string): Promise<void> => {

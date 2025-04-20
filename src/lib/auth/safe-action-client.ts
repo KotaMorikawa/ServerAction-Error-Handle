@@ -3,7 +3,7 @@ import {
   DEFAULT_SERVER_ERROR_MESSAGE,
 } from "next-safe-action";
 import { z } from "zod";
-import { getCurrentUser } from "./actions/session";
+import { getCurrentUser } from "./actions/session-actions";
 
 // エラー処理のための独自エラークラス
 class ActionError extends Error {}

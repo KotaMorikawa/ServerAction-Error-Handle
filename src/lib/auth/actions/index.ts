@@ -1,2 +1,2 @@
 // 共通の認証関連アクションをエクスポート
-export * from "./session";
+export * from "./session-actions";

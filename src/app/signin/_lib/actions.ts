@@ -1,8 +1,8 @@
 "use server";
 
-import { publicActionClient } from "@/lib/auth/client";
-import { comparePassword, createSessionToken } from "@/lib/auth/utils";
-import { setSessionCookie } from "@/lib/auth/actions/session";
+import { publicActionClient } from "@/lib/auth/safe-action-client";
+import { comparePassword, createSessionToken } from "@/lib/auth/auth-utils";
+import { setSessionCookie } from "@/lib/auth/actions/session-actions";
 import { findUserByEmail } from "@/lib/db";
 import { signinSchema } from "@/lib/schema";
 import { redirect } from "next/navigation";

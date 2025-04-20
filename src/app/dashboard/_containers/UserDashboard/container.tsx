@@ -1,4 +1,4 @@
-import { requireAuth } from "@/lib/auth/actions/session";
+import { requireAuth } from "@/lib/auth/actions/session-actions";
 import { Suspense } from "react";
 import UserDashboardPresentational from "./presentational";
 

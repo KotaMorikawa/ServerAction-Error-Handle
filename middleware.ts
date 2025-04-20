@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { verifySessionToken } from "@/lib/auth/utils";
+import { verifySessionToken } from "@/lib/auth/auth-utils";
 
 // 保護されたルートのパターン（認証が必要なルート）
 const protectedRoutes = ["/dashboard"];
