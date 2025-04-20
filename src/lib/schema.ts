@@ -7,5 +7,5 @@ export const signupSchema = z.object({
 
 export const signinSchema = z.object({
   email: z.string().email("有効なメールアドレスを入力してください"),
-  password: z.string().min(1, "パスワードを入力してください"),
+  password: z.string().min(8, "パスワードを入力してください"),
 });
